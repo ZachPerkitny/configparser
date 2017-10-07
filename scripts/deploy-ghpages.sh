@@ -7,7 +7,6 @@ remote=$(git config remote.origin.url)
 mkdir gh-pages-branch
 cd gh-pages-branch
 
-git config --global -l
 git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
 git config --global user.name "$GH_NAME" > /dev/null 2>&1
 git init

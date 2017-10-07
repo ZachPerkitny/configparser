@@ -86,7 +86,7 @@ ConfigParser.prototype.hasKey = function (section, key) {
 };
 
 /**
- * Reads a string, or buffer and parses the configuration data.
+ * Reads a file and parses the configuration data.
  * @param {string|Buffer|int} file - Filename or File Descriptor
  */
 ConfigParser.prototype.read = function(file){
