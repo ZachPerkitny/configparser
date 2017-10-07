@@ -6,7 +6,7 @@ parser. The structure is very similar to the Windows INI file.
 `npm install configparser`
 
 ### Documentation
-See Full Documentation [Here](https://google.com)
+See Full Documentation [Here](https://zachperkitny.github.io/configparser/)
 
 #### Example
 ##### Writing
@@ -48,4 +48,4 @@ config.get('MetaData', 'path'); // '/home/me/'
 ```
 
 ### Questions and Issues
-Use the [Github Issue Tracker](https://github.com) to report a bug, request a feature, or if you need any help.
+Use the [Github Issue Tracker](https://github.com/ZachPerkitny/configparser/issues) to report a bug, request a feature, or if you need any help.
