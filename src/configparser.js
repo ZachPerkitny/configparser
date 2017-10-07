@@ -32,7 +32,7 @@ function ConfigParser(){
 }
 
 /**
- * Returns an array of the sections
+ * Returns an array of the sections.
  * @returns {Array}
  */
 ConfigParser.prototype.sections = function(){
@@ -41,7 +41,7 @@ ConfigParser.prototype.sections = function(){
 
 /**
  * Adds a section named section to the instance. If the section already
- * exists, an error is raised.
+ * exists, a DuplicateSectionError is thrown.
  * @param {string} section - Section Name
  */
 ConfigParser.prototype.addSection = function(section){
@@ -174,7 +174,7 @@ ConfigParser.prototype.items = function(section){
 };
 
 /**
- *
+ * Sets the given key to the specified value.
  * @param {string} section - Section Name
  * @param {string} key - Key Name
  * @param {*} value - New Key Value
@@ -201,7 +201,7 @@ ConfigParser.prototype.removeKey = function(section, key){
 };
 
 /**
- * Removes the named section (and associated key, value pairs)
+ * Removes the named section (and associated key, value pairs).
  * @param {string} section - Section Name
  * @returns {boolean}
  */

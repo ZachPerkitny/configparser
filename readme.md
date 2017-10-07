@@ -1,4 +1,4 @@
-### Config Parser
+### Config Parser [![CircleCI](https://circleci.com/gh/ZachPerkitny/configparser.svg?style=svg)](https://circleci.com/gh/ZachPerkitny/configparser)
 A NodeJS module based off of Python's ConfigParser. It implements a basic configuration file
 parser. The structure is very similar to the Windows INI file.
 
