@@ -130,7 +130,7 @@ ConfigParser.prototype.get = function(section, key, raw){
         if(raw){
             return this._sections[section][key];
         } else {
-            return interpolation.parse(this, section, key);
+            return interpolation.parseValue(this, section, key);
         }
     }
     return undefined;

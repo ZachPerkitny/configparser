@@ -12,12 +12,12 @@ const PLACEHOLDER = new RegExp(/%\(([\w-]+)\)s/g);
  * @param {string} section - Section Name
  * @param {string} key - Key Name
  */
-function parse(parser, section, key){
+function parseValue(parser, section, key){
     var value = parser.get(section, key, true);
     var res = PLACEHOLDER.exec(value);
     while(res !== null){
         const placeholder = res[1];
-        const rep = this.parse(parser, section, placeholder);
+        const rep = parseValue(parser, section, placeholder);
         // replace %(key)s with the returned value next
         value = value.substr(0, res.index) + rep +
             value.substr(res.index + res[0].length);
@@ -28,5 +28,5 @@ function parse(parser, section, key){
 }
 
 module.exports = {
-    parse: parse
+    parseValue: parseValue
 };
