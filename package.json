@@ -6,6 +6,10 @@
   "scripts": {
     "test": "mocha ./test/*.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZachPerkitny/configparser"
+  },
   "author": "Zach Perkitny",
   "license": "ISC",
   "dependencies": {},
