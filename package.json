@@ -1,6 +1,6 @@
 {
   "name": "configparser",
-  "version": "0.0.3",
+  "version": "0.1.4",
   "description": "A basic config parser language based off the Python ConfigParser module.",
   "main": "src/configparser.js",
   "scripts": {

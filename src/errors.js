@@ -51,9 +51,26 @@ function MissingSectionHeaderError(filename, lineNumber, line){
     Error.captureStackTrace(this, this.constructor);
 }
 
+/**
+ * Error thrown when the interpolate function exceeds the maximum recursion
+ * depth.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @param {string} value - Key Value
+ * @param {int} maxDepth - Maximum recursion depth
+ * @constructor
+ */
+function MaximumInterpolationDepthError(section, key, value, maxDepth){
+    this.name = this.constructor.name;
+    this.message = 'Exceeded Maximum Recursion Depth (' + maxDepth +
+        ') for key ' + key + ' in section ' + section + '\nvalue: ' + value;
+    Error.captureStackTrace(this, this.constructor);
+}
+
 module.exports = {
     DuplicateSectionError: DuplicateSectionError,
     NoSectionError: NoSectionError,
     ParseError: ParseError,
-    MissingSectionHeaderError: MissingSectionHeaderError
+    MissingSectionHeaderError: MissingSectionHeaderError,
+    MaximumInterpolationDepthError: MaximumInterpolationDepthError
 };

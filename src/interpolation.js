@@ -1,9 +1,17 @@
+const errors = require('./errors');
+
 /**
  * Regular Expression to match placeholders.
  * @type {RegExp}
  * @private
  */
-const PLACEHOLDER = new RegExp(/%\(([\w-]+)\)s/g);
+const PLACEHOLDER = new RegExp(/%\(([\w-]+)\)s/);
+
+/**
+ * Maximum recursion depth for parseValue
+ * @type {number}
+ */
+const MAXIMUM_INTERPOLATION_DEPTH = 50;
 
 /**
  * Recursively parses a string and replaces the placeholder ( %(key)s )
@@ -12,12 +20,27 @@ const PLACEHOLDER = new RegExp(/%\(([\w-]+)\)s/g);
  * @param {string} section - Section Name
  * @param {string} key - Key Name
  */
-function parseValue(parser, section, key){
+function interpolate(parser, section, key){
+    return interpolateRecurse(parser, section, key, 1);
+}
+
+/**
+ * Interpolate Recurse
+ * @param parser
+ * @param section
+ * @param key
+ * @param depth
+ * @private
+ */
+function interpolateRecurse(parser, section, key, depth){
     var value = parser.get(section, key, true);
+    if(depth > MAXIMUM_INTERPOLATION_DEPTH){
+        throw new errors.MaximumInterpolationDepthError(section, key, value, MAXIMUM_INTERPOLATION_DEPTH);
+    }
     var res = PLACEHOLDER.exec(value);
     while(res !== null){
         const placeholder = res[1];
-        const rep = parseValue(parser, section, placeholder);
+        const rep = interpolateRecurse(parser, section, placeholder, depth + 1);
         // replace %(key)s with the returned value next
         value = value.substr(0, res.index) + rep +
             value.substr(res.index + res[0].length);
@@ -28,5 +51,6 @@ function parseValue(parser, section, key){
 }
 
 module.exports = {
-    parseValue: parseValue
+    interpolate: interpolate,
+    MAXIMUM_INTERPOLATION_DEPTH: MAXIMUM_INTERPOLATION_DEPTH
 };
