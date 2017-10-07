@@ -1,0 +1,20 @@
+#circle ci configuration
+machine:
+  node:
+    version:
+      7.7.3
+
+dependencies:
+  pre:
+    - echo "//registry.npmjg.org:_authToken=$NPM_TOKEN" >> ~/.npmrc
+    - npm install -g jsdoc
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - ./scripts/deploy-ghpages.sh
+  npm:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - npm publish

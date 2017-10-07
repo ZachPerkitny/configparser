@@ -1,0 +1,13 @@
+{
+  "source": {
+    "include": "./src",
+    "includePattern": ".js$"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "readme": "readme.md",
+    "destination": "./gh-pages-branch"
+  }
+}

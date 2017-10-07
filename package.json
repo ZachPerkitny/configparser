@@ -1,0 +1,16 @@
+{
+  "name": "configparser",
+  "version": "0.0.1",
+  "description": "A basic config parser language based off the Python ConfigParser module.",
+  "main": "src/config-parser.js",
+  "scripts": {
+    "test": "mocha ./test/*.js"
+  },
+  "author": "Zach Perkitny",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
+}
