@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 set -e # abort the script if there is a non-zero error
 
 remote=$(git config remote.origin.url)

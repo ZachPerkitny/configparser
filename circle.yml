@@ -13,7 +13,7 @@ deployment:
   production:
     branch: master
     commands:
-      - ./scripts/deploy-ghpages.sh
+      - bash scripts/deploy-ghpages.sh
   npm:
     tag: /v[0-9]+(\.[0-9]+)*/
     commands:
