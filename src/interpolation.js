@@ -33,11 +33,11 @@ function interpolate(parser, section, key){
  * @private
  */
 function interpolateRecurse(parser, section, key, depth){
-    var value = parser.get(section, key, true);
+    let value = parser.get(section, key, true);
     if(depth > MAXIMUM_INTERPOLATION_DEPTH){
         throw new errors.MaximumInterpolationDepthError(section, key, value, MAXIMUM_INTERPOLATION_DEPTH);
     }
-    var res = PLACEHOLDER.exec(value);
+    let res = PLACEHOLDER.exec(value);
     while(res !== null){
         const placeholder = res[1];
         const rep = interpolateRecurse(parser, section, placeholder, depth + 1);
@@ -51,6 +51,6 @@ function interpolateRecurse(parser, section, key, depth){
 }
 
 module.exports = {
-    interpolate: interpolate,
-    MAXIMUM_INTERPOLATION_DEPTH: MAXIMUM_INTERPOLATION_DEPTH
+    interpolate,
+    MAXIMUM_INTERPOLATION_DEPTH
 };

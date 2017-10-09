@@ -7,14 +7,14 @@ const interpolation = require('./interpolation');
  * @type {RegExp}
  * @private
  */
-const SECTION = new RegExp(/\s*\[([\w- ]+)]/);
+const SECTION = new RegExp(/\s*\[([\w- ]*)]/);
 
 /**
  * Regular expression to match key, value pairs.
  * @type {RegExp}
  * @private
  */
-const KEY = new RegExp(/\s*([\w-]+)\s*[=;]\s*(.*)/);
+const KEY = new RegExp(/\s*([\w-]*)\s*[=;]\s*(.*)/);
 
 /**
  * Regular expression to match comments. Either starting with a
@@ -23,6 +23,7 @@ const KEY = new RegExp(/\s*([\w-]+)\s*[=;]\s*(.*)/);
  * @private
  */
 const COMMENT = new RegExp(/^\s*[;#]/);
+
 
 /**
  * @constructor
@@ -96,10 +97,10 @@ ConfigParser.prototype.read = function(file){
     const lines = fs.readFileSync(file)
         .toString('utf8')
         .split(/\r\n|[\n\r\u0085\u2028\u2029]/g);
-    var curSec = null;
-    lines.forEach(function(line, lineNumber){
+    let curSec = null;
+    lines.forEach((line, lineNumber) => {
         if(!line || line.match(COMMENT)) return;
-        var res = SECTION.exec(line);
+        let res = SECTION.exec(line);
         if(res){
             const header = res[1];
             curSec = {};
@@ -115,7 +116,7 @@ ConfigParser.prototype.read = function(file){
                 throw new errors.ParseError(file, lineNumber, line);
             }
         }
-    }.bind(this));
+    });
 };
 
 /**
@@ -218,16 +219,16 @@ ConfigParser.prototype.removeSection = function(section){
  * @param {string|Buffer|int} file - Filename or File Descriptor
  */
 ConfigParser.prototype.write = function(file){
-    var out = '';
-    var section;
+    let out = '';
+    let section;
     for(section in this._sections){
         if(!this._sections.hasOwnProperty(section)) continue;
         out += ('[' + section + ']\n');
         const keys = this._sections[section];
-        var key;
+        let key;
         for(key in keys){
             if(!keys.hasOwnProperty(key)) continue;
-            const value = keys[key];
+            let value = keys[key];
             out += (key + '=' + value + '\n');
         }
         out += '\n';

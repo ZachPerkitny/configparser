@@ -68,9 +68,9 @@ function MaximumInterpolationDepthError(section, key, value, maxDepth){
 }
 
 module.exports = {
-    DuplicateSectionError: DuplicateSectionError,
-    NoSectionError: NoSectionError,
-    ParseError: ParseError,
-    MissingSectionHeaderError: MissingSectionHeaderError,
-    MaximumInterpolationDepthError: MaximumInterpolationDepthError
+    DuplicateSectionError,
+    NoSectionError,
+    ParseError,
+    MissingSectionHeaderError,
+    MaximumInterpolationDepthError
 };
