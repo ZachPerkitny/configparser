@@ -12,6 +12,7 @@ describe('ConfigParser object', function(){
             'USER',
             'im running out of ideas',
             'interpolation',
+            'permissive_section:headers%!?',
             'more_complex_interpolation'
         ]);
     });
@@ -30,6 +31,7 @@ describe('ConfigParser object', function(){
         expect(config.keys('section1')).to.deep.equal(['key', 'other', 'idontknow']);
         expect(config.keys('section2')).to.deep.equal(['value', 'key', 'woah', 'this']);
         expect(config.keys('USER')).to.deep.equal(['username', 'password']);
+        expect(config.keys('permissive_section:headers%!?')).to.deep.equal(['hello', 'goodbye']);
         expect(config.keys('im running out of ideas')).to.deep.equal(['anotherthing', 'otherthing']);
     });
 
@@ -37,6 +39,7 @@ describe('ConfigParser object', function(){
          expect(config.hasKey('section1', 'idontknow')).to.equal(true);
          expect(config.hasKey('section1', 'fakekey')).to.equal(false);
          expect(config.hasKey('fake section', 'fakekey')).to.equal(false);
+         expect(config.hasKey('permissive_section:headers%!?', 'hello')).to.equal(true);
     });
 
     it('should get the value for a key in the named section', function(){

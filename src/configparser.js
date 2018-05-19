@@ -7,14 +7,14 @@ const interpolation = require('./interpolation');
  * @type {RegExp}
  * @private
  */
-const SECTION = new RegExp(/\s*\[([\w- ]*)]/);
+const SECTION = new RegExp(/\s*\[([^\]]+)]/);
 
 /**
  * Regular expression to match key, value pairs.
  * @type {RegExp}
  * @private
  */
-const KEY = new RegExp(/\s*([\w-]*)\s*[=;]\s*(.*)/);
+const KEY = new RegExp(/\s*(.*?)\s*[=:]\s*(.*)/);
 
 /**
  * Regular expression to match comments. Either starting with a
