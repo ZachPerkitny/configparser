@@ -12,7 +12,7 @@ See Full Documentation [Here](https://zachperkitny.github.io/configparser/)
 ##### Writing
 
 There are two methods available for writing the contents
-of the config file to disk (`write` and `writeAsync`).
+of the config file to disk ([write](https://zachperkitny.github.io/configparser/ConfigParser.html#write) and [writeAsync](https://zachperkitny.github.io/configparser/ConfigParser.html#writeAsync)).
 
 ```js
 const ConfigParser = require('configparser');
@@ -46,7 +46,7 @@ dir_name=me
 ##### Reading
 
 There are two methods available for reading the contents
-of the config file to disk (`read` and `readAsync`).
+of the config file from disk: [read](https://zachperkitny.github.io/configparser/ConfigParser.html#read) and [readAsync](https://zachperkitny.github.io/configparser/ConfigParser.html#readAsync).
 
 ```js
 config.read('my-cfg-file.cfg');
