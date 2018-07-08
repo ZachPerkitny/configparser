@@ -269,6 +269,7 @@ function getSectionsAsString() {
         }
         out += '\n';
     }
+    return out;
 }
 
 module.exports = ConfigParser;
