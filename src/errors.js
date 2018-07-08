@@ -4,7 +4,7 @@
  * @param {string} section - Section Name
  * @constructor
  */
-function DuplicateSectionError(section){
+function DuplicateSectionError(section) {
     this.name = 'DuplicateSectionError';
     this.message = section + ' already exists';
     Error.captureStackTrace(this, this.constructor);
@@ -16,7 +16,7 @@ function DuplicateSectionError(section){
  * @param {string} section - Section Name
  * @constructor
  */
-function NoSectionError(section){
+function NoSectionError(section) {
     this.name = this.constructor.name;
     this.message =  'Section ' + section + ' does not exist.';
     Error.captureStackTrace(this, this.constructor);
@@ -29,7 +29,7 @@ function NoSectionError(section){
  * @param {string} line - Contents of the line
  * @constructor
  */
-function ParseError(filename, lineNumber, line){
+function ParseError(filename, lineNumber, line) {
     this.name = this.constructor.name;
     this.message = 'Source contains parsing errors.\nfile: ' + filename +
         ' line: ' + lineNumber + '\n' + line;
@@ -44,7 +44,7 @@ function ParseError(filename, lineNumber, line){
  * @param {string} line - Contents of the line
  * @constructor
  */
-function MissingSectionHeaderError(filename, lineNumber, line){
+function MissingSectionHeaderError(filename, lineNumber, line) {
     this.name = this.constructor.name;
     this.message = 'File contains no section headers.\nfile: ' + filename +
         ' line: ' + lineNumber + '\n' + line;
@@ -60,7 +60,7 @@ function MissingSectionHeaderError(filename, lineNumber, line){
  * @param {int} maxDepth - Maximum recursion depth
  * @constructor
  */
-function MaximumInterpolationDepthError(section, key, value, maxDepth){
+function MaximumInterpolationDepthError(section, key, value, maxDepth) {
     this.name = this.constructor.name;
     this.message = 'Exceeded Maximum Recursion Depth (' + maxDepth +
         ') for key ' + key + ' in section ' + section + '\nvalue: ' + value;

@@ -1,3 +1,4 @@
+const util = require('util');
 const fs = require('fs');
 const errors = require('./errors');
 const interpolation = require('./interpolation');
@@ -24,11 +25,18 @@ const KEY = new RegExp(/\s*(.*?)\s*[=:]\s*(.*)/);
  */
 const COMMENT = new RegExp(/^\s*[;#]/);
 
+// RL1.6 Line Boundaries (for unicode)
+// ... it shall recognize not only CRLF, LF, CR,
+// but also NEL, PS and LS.
+const LINE_BOUNDARY = new RegExp(/\r\n|[\n\r\u0085\u2028\u2029]/g);
+
+const readFileAsync = util.promisify(fs.readFile);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 /**
  * @constructor
  */
-function ConfigParser(){
+function ConfigParser() {
     this._sections = {};
 }
 
@@ -36,7 +44,7 @@ function ConfigParser(){
  * Returns an array of the sections.
  * @returns {Array}
  */
-ConfigParser.prototype.sections = function(){
+ConfigParser.prototype.sections = function() {
     return Object.keys(this._sections);
 };
 
@@ -45,7 +53,7 @@ ConfigParser.prototype.sections = function(){
  * exists, a DuplicateSectionError is thrown.
  * @param {string} section - Section Name
  */
-ConfigParser.prototype.addSection = function(section){
+ConfigParser.prototype.addSection = function(section) {
     if(this._sections.hasOwnProperty(section)){
         throw new errors.DuplicateSectionError(section)
     }
@@ -58,7 +66,7 @@ ConfigParser.prototype.addSection = function(section){
  * @param {string} section - Section Name
  * @returns {boolean}
  */
-ConfigParser.prototype.hasSection = function(section){
+ConfigParser.prototype.hasSection = function(section) {
     return this._sections.hasOwnProperty(section);
 };
 
@@ -67,7 +75,7 @@ ConfigParser.prototype.hasSection = function(section){
  * @param {string} section - Section Name
  * @returns {Array}
  */
-ConfigParser.prototype.keys = function(section){
+ConfigParser.prototype.keys = function(section) {
     try {
         return Object.keys(this._sections[section]);
     } catch(err){
@@ -90,13 +98,140 @@ ConfigParser.prototype.hasKey = function (section, key) {
  * Reads a file and parses the configuration data.
  * @param {string|Buffer|int} file - Filename or File Descriptor
  */
-ConfigParser.prototype.read = function(file){
-    // RL1.6 Line Boundaries (for unicode)
-    // ... it shall recognize not only CRLF, LF, CR,
-    // but also NEL, PS and LS.
+ConfigParser.prototype.read = function(file) {
     const lines = fs.readFileSync(file)
         .toString('utf8')
-        .split(/\r\n|[\n\r\u0085\u2028\u2029]/g);
+        .split(LINE_BOUNDARY);
+    parseLines.call(this, lines);
+};
+
+/**
+ * Reads a file asynchronously and parses the configuration data.
+ * @param {string|Buffer|int} file - Filename or File Descriptor
+ */
+ConfigParser.prototype.readAsync = async function(file) {
+    const lines = (await readFileAsync(file))
+        .toString('utf8')
+        .split(LINE_BOUNDARY);
+    parseLines.call(this, lines);
+}
+
+/**
+ * Gets the value for the key in the named section.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @param {boolean} [raw=false] - Whether or not to replace placeholders
+ * @returns {string|undefined}
+ */
+ConfigParser.prototype.get = function(section, key, raw) {
+    if(this._sections.hasOwnProperty(section)){
+        if(raw){
+            return this._sections[section][key];
+        } else {
+            return interpolation.interpolate(this, section, key);
+        }
+    }
+    return undefined;
+};
+
+/**
+ * Coerces value to an integer of the specified radix.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @param {int} [radix=10] - An integer between 2 and 36 that represents the base of the string.
+ * @returns {number|undefined|NaN}
+ */
+ConfigParser.prototype.getInt = function(section, key, radix) {
+    if(this._sections.hasOwnProperty(section)){
+        if(!radix) radix = 10;
+        return parseInt(this._sections[section][key], radix);
+    }
+    return undefined;
+};
+
+/**
+ * Coerces value to a float.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @returns {number|undefined|NaN}
+ */
+ConfigParser.prototype.getFloat = function(section, key) {
+    if(this._sections.hasOwnProperty(section)){
+        return parseFloat(this._sections[section][key]);
+    }
+    return undefined;
+};
+
+/**
+ * Returns an object with every key, value pair for the named section.
+ * @param {string} section - Section Name
+ * @returns {Object}
+ */
+ConfigParser.prototype.items = function(section) {
+    return this._sections[section];
+};
+
+/**
+ * Sets the given key to the specified value.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @param {*} value - New Key Value
+ */
+ConfigParser.prototype.set = function(section, key, value) {
+    if(this._sections.hasOwnProperty(section)){
+        this._sections[section][key] = value;
+    }
+};
+
+/**
+ * Removes the property specified by key in the named section.
+ * @param {string} section - Section Name
+ * @param {string} key - Key Name
+ * @returns {boolean}
+ */
+ConfigParser.prototype.removeKey = function(section, key) {
+    // delete operator returns true if the property doesn't not exist
+    if(this._sections.hasOwnProperty(section) &&
+        this._sections[section].hasOwnProperty(key)){
+        return delete this._sections[section][key];
+    }
+    return false;
+};
+
+/**
+ * Removes the named section (and associated key, value pairs).
+ * @param {string} section - Section Name
+ * @returns {boolean}
+ */
+ConfigParser.prototype.removeSection = function(section) {
+    if(this._sections.hasOwnProperty(section)){
+        return delete this._sections[section];
+    }
+    return false;
+};
+
+/**
+ * Writes the representation of the config file to the
+ * specified file. Comments are not preserved.
+ * @param {string|Buffer|int} file - Filename or File Descriptor
+ */
+ConfigParser.prototype.write = function(file) {
+    const out = getSectionsAsString.call(this);
+    fs.writeFileSync(file, out);
+};
+
+/**
+ * Writes the representation of the config file to the
+ * specified file asynchronously. Comments are not preserved.
+ * @param {string|Buffer|int} file - Filename or File Descriptor
+ * @returns {Promise}
+ */
+ConfigParser.prototype.writeAsync = function(file) {
+    const out = getSectionsAsString.call(this);
+    return writeFileAsync(file, out);
+}
+
+function parseLines(lines) {
     let curSec = null;
     lines.forEach((line, lineNumber) => {
         if(!line || line.match(COMMENT)) return;
@@ -117,108 +252,9 @@ ConfigParser.prototype.read = function(file){
             }
         }
     });
-};
+}
 
-/**
- * Gets the value for the key in the named section.
- * @param {string} section - Section Name
- * @param {string} key - Key Name
- * @param {boolean} [raw=false] - Whether or not to replace placeholders
- * @returns {string|undefined}
- */
-ConfigParser.prototype.get = function(section, key, raw){
-    if(this._sections.hasOwnProperty(section)){
-        if(raw){
-            return this._sections[section][key];
-        } else {
-            return interpolation.interpolate(this, section, key);
-        }
-    }
-    return undefined;
-};
-
-/**
- * Coerces value to an integer of the specified radix.
- * @param {string} section - Section Name
- * @param {string} key - Key Name
- * @param {int} [radix=10] - An integer between 2 and 36 that represents the base of the string.
- * @returns {number|undefined|NaN}
- */
-ConfigParser.prototype.getInt = function(section, key, radix){
-    if(this._sections.hasOwnProperty(section)){
-        if(!radix) radix = 10;
-        return parseInt(this._sections[section][key], radix);
-    }
-    return undefined;
-};
-
-/**
- * Coerces value to a float.
- * @param {string} section - Section Name
- * @param {string} key - Key Name
- * @returns {number|undefined|NaN}
- */
-ConfigParser.prototype.getFloat = function(section, key){
-    if(this._sections.hasOwnProperty(section)){
-        return parseFloat(this._sections[section][key]);
-    }
-    return undefined;
-};
-
-/**
- * Returns an object with every key, value pair for the named section.
- * @param {string} section - Section Name
- * @returns {Object}
- */
-ConfigParser.prototype.items = function(section){
-    return this._sections[section];
-};
-
-/**
- * Sets the given key to the specified value.
- * @param {string} section - Section Name
- * @param {string} key - Key Name
- * @param {*} value - New Key Value
- */
-ConfigParser.prototype.set = function(section, key, value){
-    if(this._sections.hasOwnProperty(section)){
-        this._sections[section][key] = value;
-    }
-};
-
-/**
- * Removes the property specified by key in the named section.
- * @param {string} section - Section Name
- * @param {string} key - Key Name
- * @returns {boolean}
- */
-ConfigParser.prototype.removeKey = function(section, key){
-    // delete operator returns true if the property doesn't not exist
-    if(this._sections.hasOwnProperty(section) &&
-        this._sections[section].hasOwnProperty(key)){
-        return delete this._sections[section][key];
-    }
-    return false;
-};
-
-/**
- * Removes the named section (and associated key, value pairs).
- * @param {string} section - Section Name
- * @returns {boolean}
- */
-ConfigParser.prototype.removeSection = function(section){
-    if(this._sections.hasOwnProperty(section)){
-        return delete this._sections[section];
-    }
-    return false;
-};
-
-/**
- * Writes the representation of the config file to the
- * specified file. Comments are not preserved.
- * @param {string|Buffer|int} file - Filename or File Descriptor
- */
-ConfigParser.prototype.write = function(file){
+function getSectionsAsString() {
     let out = '';
     let section;
     for(section in this._sections){
@@ -233,7 +269,6 @@ ConfigParser.prototype.write = function(file){
         }
         out += '\n';
     }
-    fs.writeFileSync(file, out);
-};
+}
 
 module.exports = ConfigParser;

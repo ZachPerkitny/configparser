@@ -20,7 +20,7 @@ const MAXIMUM_INTERPOLATION_DEPTH = 50;
  * @param {string} section - Section Name
  * @param {string} key - Key Name
  */
-function interpolate(parser, section, key){
+function interpolate(parser, section, key) {
     return interpolateRecurse(parser, section, key, 1);
 }
 
@@ -32,7 +32,7 @@ function interpolate(parser, section, key){
  * @param depth
  * @private
  */
-function interpolateRecurse(parser, section, key, depth){
+function interpolateRecurse(parser, section, key, depth) {
     let value = parser.get(section, key, true);
     if(depth > MAXIMUM_INTERPOLATION_DEPTH){
         throw new errors.MaximumInterpolationDepthError(section, key, value, MAXIMUM_INTERPOLATION_DEPTH);
