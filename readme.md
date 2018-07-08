@@ -10,6 +10,10 @@ See Full Documentation [Here](https://zachperkitny.github.io/configparser/)
 
 #### Example
 ##### Writing
+
+There are two methods available for writing the contents
+of the config file to disk (`write` and `writeAsync`).
+
 ```js
 const ConfigParser = require('configparser');
 
@@ -40,6 +44,10 @@ dir_name=me
 ```
 
 ##### Reading
+
+There are two methods available for reading the contents
+of the config file to disk (`read` and `readAsync`).
+
 ```js
 config.read('my-cfg-file.cfg');
 config.sections(); // ['User', 'MetaData']
