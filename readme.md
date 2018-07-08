@@ -12,7 +12,7 @@ See Full Documentation [Here](https://zachperkitny.github.io/configparser/)
 ##### Writing
 
 There are two methods available for writing the contents
-of the config file to disk ([write](https://zachperkitny.github.io/configparser/ConfigParser.html#write) and [writeAsync](https://zachperkitny.github.io/configparser/ConfigParser.html#writeAsync)).
+of the config file to disk: [write](https://zachperkitny.github.io/configparser/ConfigParser.html#write) and [writeAsync](https://zachperkitny.github.io/configparser/ConfigParser.html#writeAsync).
 
 ```js
 const ConfigParser = require('configparser');
