@@ -5,17 +5,17 @@ describe('ConfigParser object', function(){
     const config = new ConfigParser();
     config.read('test/data/file.ini');
 
-    it('should return all sections in the config file', function(){
-        expect(config.sections()).to.deep.equal([
-            'section1',
-            'section2',
-            'USER',
-            'im running out of ideas',
-            'interpolation',
-            'permissive_section:headers%!?',
-            'more_complex_interpolation'
-        ]);
-    });
+	it('should return all sections in the config file', function () {
+		expect(config.sections()).to.deep.equal([
+			'section1',
+			'section2',
+			'USER',
+			'im running out of ideas',
+			'interpolation',
+			'permissive_section:headers%!?',
+			'more_complex_interpolation'
+		]);
+	});
 
     it('should indicate if a section is present in a config file', function(){
         expect(config.hasSection('section1')).to.equal(true);
@@ -80,4 +80,19 @@ describe('ConfigParser object', function(){
         expect(config.removeSection('new-section')).to.equal(true);
         expect(config.hasSection('new-section')).to.equal(false);
     });
+
+
+	describe('Transform configuration keys', function(){
+		const config = new ConfigParser({transform: 'upper'});
+		before(function(){
+
+			config.read('test/data/file.ini');
+		});
+
+		it('should should upper keys', function () {
+			console.log('---',config.sections() )
+			expect(config.sections().indexOf('SECTION1')).to.be.eql(0)
+		})
+	})
+
 });
