@@ -267,11 +267,9 @@ function parseLines(lines, options) {
             throw new errors.MissingSectionHeaderError(file, lineNumber, line);
         } else {
             res = KEY.exec(line);
-            console.log(res, curSec);
             if(res){
                 const key = res[1];
                 curSec[upperCaseKey(key)] = res[2];
-                console.log(key);
             } else {
                 throw new errors.ParseError(file, lineNumber, line);
             }
