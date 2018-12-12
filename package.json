@@ -1,6 +1,6 @@
 {
   "name": "configparser",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "A basic config parser language based off the Python ConfigParser module.",
   "main": "src/configparser.js",
   "scripts": {
@@ -13,12 +13,12 @@
   "author": "Zach Perkitny",
   "license": "ISC",
   "keywords": [
-      "config",
-      "parser",
-      "configparser",
-      "config-parser",
-      "ini",
-      "node"
+    "config",
+    "parser",
+    "configparser",
+    "config-parser",
+    "ini",
+    "node"
   ],
   "dependencies": {},
   "devDependencies": {
