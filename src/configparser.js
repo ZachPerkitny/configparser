@@ -1,5 +1,7 @@
 const util = require('util');
 const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
 const errors = require('./errors');
 const interpolation = require('./interpolation');
 
@@ -32,6 +34,8 @@ const LINE_BOUNDARY = new RegExp(/\r\n|[\n\r\u0085\u2028\u2029]/g);
 
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
+const statAsync = util.promisify(fs.stat);
+const mkdirAsync = util.promisify(mkdirp);
 
 /**
  * @constructor
@@ -214,8 +218,13 @@ ConfigParser.prototype.removeSection = function(section) {
  * Writes the representation of the config file to the
  * specified file. Comments are not preserved.
  * @param {string|Buffer|int} file - Filename or File Descriptor
+ * @param {bool} [createMissingDirs=false] - Whether to create the directories in the path if they don't exist
  */
-ConfigParser.prototype.write = function(file) {
+ConfigParser.prototype.write = function(file, createMissingDirs = false) {
+    if (createMissingDirs) {
+        ensureDirectoriesExist(file);
+    }
+
     const out = getSectionsAsString.call(this);
     fs.writeFileSync(file, out);
 };
@@ -224,11 +233,16 @@ ConfigParser.prototype.write = function(file) {
  * Writes the representation of the config file to the
  * specified file asynchronously. Comments are not preserved.
  * @param {string|Buffer|int} file - Filename or File Descriptor
+ * @param {bool} [createMissingDirs=false] - Whether to create the directories in the path if they don't exist
  * @returns {Promise}
  */
-ConfigParser.prototype.writeAsync = function(file) {
+ConfigParser.prototype.writeAsync = async function(file, createMissingDirs = false) {
+    if (createMissingDirs) {
+        await ensureDirectoriesExistAsync(file);
+    }
+
     const out = getSectionsAsString.call(this);
-    return writeFileAsync(file, out);
+    await writeFileAsync(file, out);
 }
 
 function parseLines(lines) {
@@ -270,6 +284,32 @@ function getSectionsAsString() {
         out += '\n';
     }
     return out;
+}
+
+function ensureDirectoriesExist(filePath) {
+    const dir = path.dirname(filePath);
+    try {
+        fs.statSync(dir);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            mkdirp.sync(dir);
+        } else {
+            throw err;
+        }
+    }
+}
+
+async function ensureDirectoriesExistAsync(filePath) {
+    const dir = path.dirname(filePath);
+    try {
+        await statAsync(dir);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            await mkdirAsync(dir);
+        } else {
+            throw err;
+        }
+    }
 }
 
 module.exports = ConfigParser;

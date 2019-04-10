@@ -13,14 +13,16 @@
   "author": "Zach Perkitny",
   "license": "ISC",
   "keywords": [
-      "config",
-      "parser",
-      "configparser",
-      "config-parser",
-      "ini",
-      "node"
+    "config",
+    "parser",
+    "configparser",
+    "config-parser",
+    "ini",
+    "node"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "mkdirp": "^0.5.1"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^4.0.1"
