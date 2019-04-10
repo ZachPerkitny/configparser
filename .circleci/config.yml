@@ -51,7 +51,7 @@ jobs:
             git config user.name "$GH_NAME"
       - run:
           name: Deploy docs
-          command: gh-pages --dist docs/
+          command: gh-pages --dist docs/ --message "[skip ci] Updates"
 
 workflows:
   version: 2
