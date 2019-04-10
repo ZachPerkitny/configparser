@@ -222,7 +222,8 @@ ConfigParser.prototype.removeSection = function(section) {
  */
 ConfigParser.prototype.write = function(file, createMissingDirs = false) {
     if (createMissingDirs) {
-        ensureDirectoriesExist(file);
+        const dir = path.dirname(file);
+        mkdirp.sync(dir);
     }
 
     fs.writeFileSync(file, getSectionsAsString.call(this));
@@ -237,7 +238,8 @@ ConfigParser.prototype.write = function(file, createMissingDirs = false) {
  */
 ConfigParser.prototype.writeAsync = async function(file, createMissingDirs = false) {
     if (createMissingDirs) {
-        await ensureDirectoriesExistAsync(file);
+        const dir = path.dirname(file);
+        await mkdirAsync(dir);
     }
 
     await writeFileAsync(file, getSectionsAsString.call(this));
@@ -282,32 +284,6 @@ function getSectionsAsString() {
         out += '\n';
     }
     return out;
-}
-
-function ensureDirectoriesExist(filePath) {
-    const dir = path.dirname(filePath);
-    try {
-        fs.statSync(dir);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            mkdirp.sync(dir);
-        } else {
-            throw err;
-        }
-    }
-}
-
-async function ensureDirectoriesExistAsync(filePath) {
-    const dir = path.dirname(filePath);
-    try {
-        await statAsync(dir);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            await mkdirAsync(dir);
-        } else {
-            throw err;
-        }
-    }
 }
 
 module.exports = ConfigParser;
