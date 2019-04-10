@@ -40,9 +40,13 @@ jobs:
             - "8c:9a:3f:98:cd:c9:1e:c8:ec:0b:0c:3e:1e:48:51:96"
       - run:
           name: Install dependencies
+          command: sudo npm install -g jsdoc gh-pages
+      - run:
+          name: Build docs
+          command: jsdoc -c jsdoc.json
+      - run:
+          name: Configure git
           command: |
-            sudo npm install -g jsdoc
-            sudo npm install -g --silent gh-pages
             git config user.email "$GH_EMAIL"
             git config user.name "$GH_NAME"
       - run:
