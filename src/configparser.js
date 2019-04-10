@@ -225,8 +225,7 @@ ConfigParser.prototype.write = function(file, createMissingDirs = false) {
         ensureDirectoriesExist(file);
     }
 
-    const out = getSectionsAsString.call(this);
-    fs.writeFileSync(file, out);
+    fs.writeFileSync(file, getSectionsAsString.call(this));
 };
 
 /**
@@ -241,8 +240,7 @@ ConfigParser.prototype.writeAsync = async function(file, createMissingDirs = fal
         await ensureDirectoriesExistAsync(file);
     }
 
-    const out = getSectionsAsString.call(this);
-    await writeFileAsync(file, out);
+    await writeFileAsync(file, getSectionsAsString.call(this));
 }
 
 function parseLines(lines) {
