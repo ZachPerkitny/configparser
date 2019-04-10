@@ -19,18 +19,25 @@ jobs:
   deploy:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
+          name: Publish to npm
+          command: npm publish
   deploy-docs:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run:
-          name: Install JSDoc
+          name: Install jsdoc
           command: sudo npm install -g jsdoc
       - run:
-          name: Deploy Docs
-          command: cd scripts; bash ./deploy-ghpages.sh
+          name: Deploy docs
+          command: bash scripts/deploy-ghpages.sh
 
 workflows:
   version: 2
@@ -52,11 +59,13 @@ workflows:
               ignore: /.*/
   test-deploy-docs:
     jobs:
-      - deploy-docs:
+      - test:
           filters:
             branches:
               only: master
       - deploy-docs:
+          requires:
+            - test
           filters:
             branches:
               only: master
