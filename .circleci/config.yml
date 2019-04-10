@@ -30,7 +30,7 @@ jobs:
           command: sudo npm install -g jsdoc
       - run:
           name: Deploy Docs
-          command: bash scripts/deploy-ghpages.sh
+          command: cd scripts; bash ./deploy-ghpages.sh
 
 workflows:
   version: 2
