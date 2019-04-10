@@ -8,6 +8,6 @@
   ],
   "opts": {
     "readme": "readme.md",
-    "destination": "./gh-pages-branch"
+    "destination": "./docs"
   }
 }
