@@ -37,7 +37,7 @@ jobs:
           at: ~/repo
       - add_ssh_keys:
           fingerprints:
-            - "8c:9a:3f:98:cd:c9:1e:c8:ec:0b:0c:3e:1e:48:51:96"
+            - "68:18:c2:6e:1e:50:38:9c:fa:24:e2:3b:f6:ea:fe:6b"
       - run:
           name: Install dependencies
           command: sudo npm install -g jsdoc gh-pages
