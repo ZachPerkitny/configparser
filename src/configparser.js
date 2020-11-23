@@ -106,7 +106,7 @@ ConfigParser.prototype.read = function(file) {
     const lines = fs.readFileSync(file)
         .toString('utf8')
         .split(LINE_BOUNDARY);
-    parseLines.call(this, lines);
+    parseLines.call(this, file, lines);
 };
 
 /**
@@ -117,7 +117,7 @@ ConfigParser.prototype.readAsync = async function(file) {
     const lines = (await readFileAsync(file))
         .toString('utf8')
         .split(LINE_BOUNDARY);
-    parseLines.call(this, lines);
+    parseLines.call(this, file, lines);
 }
 
 /**
@@ -245,7 +245,7 @@ ConfigParser.prototype.writeAsync = async function(file, createMissingDirs = fal
     await writeFileAsync(file, getSectionsAsString.call(this));
 }
 
-function parseLines(lines) {
+function parseLines(file, lines) {
     let curSec = null;
     lines.forEach((line, lineNumber) => {
         if(!line || line.match(COMMENT)) return;
