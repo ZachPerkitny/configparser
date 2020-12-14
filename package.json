@@ -3,6 +3,7 @@
   "version": "0.3.7",
   "description": "A basic config parser language based off the Python ConfigParser module.",
   "main": "src/configparser.js",
+  "types": "typings/configparser.d.ts",
   "scripts": {
     "test": "mocha ./test/*.js"
   },
