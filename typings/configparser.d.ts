@@ -17,7 +17,7 @@ declare module 'configparser' {
     removeKey(section: string, key: string): boolean;
     removeSection(section: string): boolean;
     write(file: FileInputType, createMissingDirs?: boolean): void;
-    writeSync(file: FileInputType, createMissingDirs?: boolean): Promise<void>;
+    writeAsync(file: FileInputType, createMissingDirs?: boolean): Promise<void>;
   }
 
   export default ConfigParser
