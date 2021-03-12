@@ -8,7 +8,7 @@ declare module 'configparser' {
     keys(section: string): string[];
     hasKey(section: string, key: string): boolean;
     read(file: FileInputType): void;
-    readAsync(file: FileInputType): void;
+    readAsync(file: FileInputType): Promise<void>;
     get(section: string, key: string, raw?: boolean): string | undefined;
     getInt(section: string, key: string, radix?: number): number | undefined;
     getFloat(section: string, key: string): number|undefined;
