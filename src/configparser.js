@@ -287,3 +287,4 @@ function getSectionsAsString() {
 }
 
 module.exports = ConfigParser;
+module.exports.default = ConfigParser;
