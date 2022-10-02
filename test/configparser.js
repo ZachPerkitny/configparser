@@ -13,13 +13,15 @@ describe('ConfigParser object', function(){
             'im running out of ideas',
             'interpolation',
             'permissive_section:headers%!?',
-            'more_complex_interpolation'
+            'more_complex_interpolation',
+            'sec'
         ]);
     });
 
     it('should indicate if a section is present in a config file', function(){
         expect(config.hasSection('section1')).to.equal(true);
         expect(config.hasSection('section4')).to.equal(false);
+        expect(config.hasSection('sec')).to.equal(true);
     });
 
     it('should add a new section', function(){
@@ -33,6 +35,7 @@ describe('ConfigParser object', function(){
         expect(config.keys('USER')).to.deep.equal(['username', 'password']);
         expect(config.keys('permissive_section:headers%!?')).to.deep.equal(['hello', 'goodbye']);
         expect(config.keys('im running out of ideas')).to.deep.equal(['anotherthing', 'otherthing']);
+        expect(config.keys('sec')).to.deep.equal(['key', 'test', '[wow]']);
     });
 
     it('should indicate if a section has a key', function(){
@@ -40,11 +43,13 @@ describe('ConfigParser object', function(){
          expect(config.hasKey('section1', 'fakekey')).to.equal(false);
          expect(config.hasKey('fake section', 'fakekey')).to.equal(false);
          expect(config.hasKey('permissive_section:headers%!?', 'hello')).to.equal(true);
+         expect(config.hasKey('sec', 'key')).to.equal(true);
     });
 
     it('should get the value for a key in the named section', function(){
         expect(config.get('section1', 'key')).to.equal('value');
         expect(config.get('USER', 'username')).to.equal('user');
+        expect(config.get('sec', 'key')).to.equal('[value]');
     });
 
     it('should recursively replace placehoders', function(){
@@ -65,6 +70,11 @@ describe('ConfigParser object', function(){
             other: 'something else',
             idontknow: 'more values!',
             NewKey: 'hello'
+        });
+        expect(config.items('sec')).to.deep.equal({
+            key: '[value]',
+            test: '[something 1234 hello]',
+            '[wow]': '[45]'
         });
     });
 
