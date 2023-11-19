@@ -1,3 +1,7 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
 const expect = require('chai').expect;
 const ConfigParser = require('../src/configparser');
 
@@ -14,7 +18,10 @@ describe('ConfigParser object', function(){
             'interpolation',
             'permissive_section:headers%!?',
             'more_complex_interpolation',
-            'sec'
+            'sec',
+            'multiline_value',
+            'multiline_value_with_empty_first_line',
+            'indented_section_with_multiline_value'
         ]);
     });
 
@@ -39,11 +46,11 @@ describe('ConfigParser object', function(){
     });
 
     it('should indicate if a section has a key', function(){
-         expect(config.hasKey('section1', 'idontknow')).to.equal(true);
-         expect(config.hasKey('section1', 'fakekey')).to.equal(false);
-         expect(config.hasKey('fake section', 'fakekey')).to.equal(false);
-         expect(config.hasKey('permissive_section:headers%!?', 'hello')).to.equal(true);
-         expect(config.hasKey('sec', 'key')).to.equal(true);
+        expect(config.hasKey('section1', 'idontknow')).to.equal(true);
+        expect(config.hasKey('section1', 'fakekey')).to.equal(false);
+        expect(config.hasKey('fake section', 'fakekey')).to.equal(false);
+        expect(config.hasKey('permissive_section:headers%!?', 'hello')).to.equal(true);
+        expect(config.hasKey('sec', 'key')).to.equal(true);
     });
 
     it('should get the value for a key in the named section', function(){
@@ -89,5 +96,58 @@ describe('ConfigParser object', function(){
         expect(config.removeSection('fake-section')).to.equal(false);
         expect(config.removeSection('new-section')).to.equal(true);
         expect(config.hasSection('new-section')).to.equal(false);
+    });
+
+    it('should handle multiline strings correctly', function(){
+        expect(config.get('multiline_value', 'key')).to.equal('this is a\nstring that spans\nmultiple lines');
+        expect(config.get('multiline_value_with_empty_first_line', 'key')).to.equal('\nthis is a\nstring that spans\nmultiple lines');
+        expect(config.get('indented_section_with_multiline_value', 'key')).to.equal('this is yet another\nstring that spans\nmultiple lines');
+    });
+
+});
+
+describe('ConfigParser write', function() {
+    let tempFilePath;
+    let tempDirPath;
+
+    before(function() {
+        // Create temporary directory and file for testing purpose
+        tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), 'temp-'));
+        tempFilePath = path.join(tempDirPath, 'temp.ini');
+    });
+
+    after(function() {
+        // Delete the temporary file
+        fs.unlinkSync(tempFilePath);
+    });
+
+    it('should write to a file', function() {
+        const config = new ConfigParser();
+
+        // Modify the configparser
+        config.addSection('section1');
+        config.set('section1', 'key', 'new value');
+        config.set('section1', 'another_key', 'new value');
+
+        // Write the configparser to the file
+        config.write(tempFilePath);
+
+        // Read the file and verify the content
+        const fileContent = fs.readFileSync(tempFilePath, 'utf8');
+        expect(fileContent).to.equal('[section1]\nkey=new value\nanother_key=new value\n\n');
+    });
+
+    it('should handle multiline values', function() {
+        const config = new ConfigParser();
+        config.addSection('section1');
+        // Modify the configparser with multiline values
+        config.set('section1', 'multiline_key', 'this is a\nmultiline value\nwith three lines');
+
+        // Write the configparser to the file
+        config.write(tempFilePath);
+
+        // Read the file and verify the content
+        const fileContent = fs.readFileSync(tempFilePath, 'utf8');
+        expect(fileContent).to.equal('[section1]\nmultiline_key=this is a\n\tmultiline value\n\twith three lines\n\n');
     });
 });
