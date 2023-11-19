@@ -10,14 +10,19 @@ const interpolation = require('./interpolation');
  * @type {RegExp}
  * @private
  */
-const SECTION = new RegExp(/^\s*\[([^\]]+)]$/);
+const SECTION = new RegExp(/^(?<indent>\s*)\[(?<sectionName>[^\]]+)]$/);
 
 /**
  * Regular expression to match key, value pairs.
  * @type {RegExp}
  * @private
  */
-const KEY = new RegExp(/^\s*(.*?)\s*[=:]\s*(.*)$/);
+const KEY = new RegExp(/^(?<indent>\s*)(?<key>.*?)\s*[=:]\s*(?<value>.*)$/);
+
+/**
+ * Regular expression to match second+ lines in a multiline value.
+ */
+const MULTILINE_VALUE = new RegExp(/^(?<indent>\s*)(?<value>.*?)$/);
 
 /**
  * Regular expression to match comments. Either starting with a
@@ -34,7 +39,6 @@ const LINE_BOUNDARY = new RegExp(/\r\n|[\n\r\u0085\u2028\u2029]/g);
 
 const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
-const statAsync = util.promisify(fs.stat);
 const mkdirAsync = util.promisify(mkdirp);
 
 /**
@@ -247,23 +251,37 @@ ConfigParser.prototype.writeAsync = async function(file, createMissingDirs = fal
 
 function parseLines(file, lines) {
     let curSec = null;
+    let curIndent = null;
+    let curKey = null;
     lines.forEach((line, lineNumber) => {
         if(!line || line.match(COMMENT)) return;
         let res = SECTION.exec(line);
         if(res){
-            const header = res[1];
+            const header = res.groups.sectionName;
+            curIndent = res.groups.indent;
             curSec = {};
             this._sections[header] = curSec;
         } else if(!curSec) {
             throw new errors.MissingSectionHeaderError(file, lineNumber, line);
         } else {
             res = KEY.exec(line);
+            const multilineRes = MULTILINE_VALUE.exec(line);
             if(res){
-                const key = res[1];
-                curSec[key] = res[2];
-            } else {
-                throw new errors.ParseError(file, lineNumber, line);
+                const key = res.groups.key;
+                curSec[key] = res.groups.value;
+                curKey = key;
+                return;
+            } else if (multilineRes) {
+                const indent = multilineRes.groups.indent;
+                // If current line is more indented than the section header,
+                // we know it's a multiline string, in which case we append
+                // the line to the last key's value.
+                if (indent.indexOf(curIndent) !== -1 && indent.length > curIndent.length) {
+                    curSec[curKey] += '\n' + multilineRes.groups.value;
+                    return;
+                }
             }
+            throw new errors.ParseError(file, lineNumber, line);
         }
     });
 }
@@ -279,6 +297,9 @@ function getSectionsAsString() {
         for(key in keys){
             if(!keys.hasOwnProperty(key)) continue;
             let value = keys[key];
+            // For multiline values, add a tab indent for subsequent lines,
+            // and normalize the line boundary with *nix style line endings.
+            value = value.replace(LINE_BOUNDARY, '\n\t');
             out += (key + '=' + value + '\n');
         }
         out += '\n';
